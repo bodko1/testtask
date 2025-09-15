@@ -17,6 +17,7 @@ export default function RegisterPage() {
       navigate("/trips");
     } catch (error) {
       console.error(error.message);
+      alert(error.message);
     }
   }
   return (
@@ -27,7 +28,7 @@ export default function RegisterPage() {
       <button type="submit">Sign up</button>
       <p>
         Вже є акаунт?{" "}
-        <button onClick={() => navigate ("/login")}>Увійти</button>
+        <button type="button" onClick={() => navigate ("/login")}>Увійти</button>
       </p>
     </form>
   );

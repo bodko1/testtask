@@ -1,10 +1,8 @@
-import './App.css'
 import {AuthProvider, useAuth} from "./context/AuthContext.jsx";
 import {BrowserRouter, Navigate, Route, Router, Routes} from "react-router-dom";
 import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import TripsPage from "./pages/TripsPage.jsx";
-
 function PrivateRoute({children}) {
   const {user} = useAuth();
   return user ? children : <Navigate to="/login"/>
@@ -28,7 +26,8 @@ function App() {
                 />
                 <Route path="*" element={<Navigate to="/trips" />} />
 
-              </Routes>
+
+        </Routes>
       </BrowserRouter>
 
 

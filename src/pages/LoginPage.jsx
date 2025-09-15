@@ -29,7 +29,7 @@ export default function LoginPage() {
       <button type="submit">Login</button>
       <p>
         Немає акаунту?{" "}
-        <button onClick={() => navigate("/register")}>Зареєструватися</button>
+        <button   type="button" onClick={() => navigate("/register")}>Зареєструватися</button>
       </p>
     </form>
   );
