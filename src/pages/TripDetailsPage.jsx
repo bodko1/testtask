@@ -85,7 +85,7 @@ export default function TripDetailsPage() {
   };
 
   return (
-    <div >
+    <div className="flex flex-col items-center justify-center min-h-screen gap-4">
       <h2>Деталі подорожі</h2>
 
       {editingTrip ? (
@@ -118,19 +118,31 @@ export default function TripDetailsPage() {
           <p><strong>Назва:</strong> {trip.title}</p>
           <p><strong>Дата виїзду:</strong> {formatForDisplay(trip.startDate)}</p>
           <p><strong>Дата приїзду:</strong> {formatForDisplay(trip.endDate)}</p>
-          <p><strong>Власник:</strong> {trip.ownerEmail}</p>
+          <p><strong>Власник:</strong> {trip.ownerId}</p>
 
           {isOwner && (
-            <Button onClick={() => startEdit(trip)}>Редагувати</Button>
+            <Button
+              onClick={() => startEdit(trip)}
+              className="!p-3 hover:bg-gray-200 !mr-2 !ml-2"
+
+            >Редагувати</Button>
           )}
 
           {isOwner && (
             <Link to={`/trips/${id}/access`}>
-              <Button variant="outline">Доступи</Button>
+              <Button
+                variant="outline"
+                className="!p-3 hover:bg-gray-200 !mr-2"
+
+              >Доступи</Button>
             </Link>
           )}
 
-          <Button variant="ghost" onClick={() => navigate("/trips")}>
+          <Button
+            variant="outline"
+            onClick={() => navigate("/trips")}
+            className="!p-3 hover:bg-gray-200"
+          >
             Назад
           </Button>
         </div>

@@ -13,6 +13,7 @@ import {
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
 
 export default function TripsPage() {
   const { user, logout } = useAuth();
@@ -30,19 +31,7 @@ export default function TripsPage() {
     endDate: "",
   });
 
-  // Початок редагування
-  const startEdit = (trip) => {
-    setEditingTrip({
-      id: trip.id,
-      title: trip.title,
-      startDate: trip.startDate
-        ? new Date(trip.startDate.seconds * 1000).toISOString().slice(0, 10)
-        : "",
-      endDate: trip.endDate
-        ? new Date(trip.endDate.seconds * 1000).toISOString().slice(0, 10)
-        : "",
-    });
-  };
+
 
   const saveEdit = async () => {
     if (
@@ -165,43 +154,44 @@ export default function TripsPage() {
 
 
   return (
-    <div className="p-4 max-w-md mx-auto">
+    <div className="flex flex-col items-center justify-center min-h-screen gap-4">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Мої подорожі</h2>
-        <Button variant="destructive" onClick={handleLogout}>
+        <h2 className="!text-3xl !font-bold">Мої подорожі</h2>
+        <Button variant="destructive" onClick={handleLogout} className="!p-3 absolute top-2 right-4 bg-red-400 hover:bg-red-500">
           Вийти
         </Button>
       </div>
 
       <form onSubmit={handleAddTrip} className="flex flex-col gap-2 mb-4">
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Нова подорож"
-          className="border p-2 rounded"
+        <Input value={title}
+               onChange={(e) => setTitle(e.target.value)}
+               type="text"
+               placeholder="Введіть назву подорожі:"
+               className="!p-3 border rounded !mb-3"
         />
-        <div className="flex gap-2">
+
+        <div className="flex gap-2 !mb-3">
           <input
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="border p-2 rounded flex-1"
+            className="!border !p-2 rounded flex-1"
           />
           <input
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="border p-2 rounded flex-1"
+            className="!border !p-2 rounded flex-1"
           />
         </div>
-        <Button type="submit">Додати</Button>
+        <Button type="submit" className="hover:bg-gray-200">Додати</Button>
       </form>
 
-      <ul>
+      <ul className="flex flex-col gap-4 !p-5">
         {trips.map((trip) => {
-          const isOwner = trip.ownerId === user.uid;
+          // const isOwner = trip.ownerId === user.uid;
           return (
-            <li key={trip.id} className="border-b py-2">
+            <li key={trip.id} className="!border rounded !p-2 w-100">
               {editingTrip.id === trip.id ? (
                 <div className="flex flex-col gap-2">
                   <input
@@ -269,9 +259,9 @@ export default function TripsPage() {
                   <div className="flex gap-2">
                     <Link
                       to={`/trips/${trip.id}`}
-                      className="text-blue-500 hover:underline"
+                      className="text-blue-400 hover:text-blue-600 "
                     >
-                      Відкрити
+                      Open
                     </Link>
                   </div>
                 </div>
