@@ -4,6 +4,7 @@ import { db } from "../services/firebase";
 import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import { useAuth } from "../context/AuthContext";
 import { Button } from "../components/ui/button";
+import {Input} from "@/components/ui/input.js";
 
 export default function TripAccessPage() {
   const { id } = useParams();
@@ -68,27 +69,29 @@ export default function TripAccessPage() {
   };
 
   return (
-    <div className="p-4 max-w-md mx-auto">
+    <div className="flex flex-col items-center justify-center min-h-screen gap-4">
       <h2 className="text-2xl font-bold mb-4">
         {trip.title} — доступ
       </h2>
 
-      <Button variant="ghost" onClick={() => navigate("/trips")}>
+      <Button variant="outline" className="!p-3 hover:bg-gray-200 " onClick={() => navigate(`/trips/${id}`)}>
         Назад
       </Button>
 
       {isOwner && (
         <form onSubmit={handleInvite} className="flex gap-2 my-4">
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email для інвайту"
-            className="border p-2 rounded flex-1"
+          <Input
+                value={email}
+                 type="email"
+                placeholder="Email для інвайту"
+                 onChange={(e) => setEmail(e.target.value)}
+                 className="!p-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200"
+
           />
+
           <Button
             type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            className="!p-3 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
             Додати
           </Button>

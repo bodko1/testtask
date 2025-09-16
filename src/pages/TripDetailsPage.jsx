@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { db } from "../services/firebase.js";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { Button } from "../components/ui/button.jsx";
+import {Input} from "@/components/ui/input.js";
 
 export default function TripDetailsPage() {
   const { id } = useParams();
@@ -90,11 +91,12 @@ export default function TripDetailsPage() {
 
       {editingTrip ? (
         <div className="flex flex-col gap-2">
-          <input
+          <Input
             type="text"
             value={editingTrip.title}
             onChange={(e) => setEditingTrip({ ...editingTrip, title: e.target.value })}
-            className="border p-2 rounded"
+            className="!p-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200"
+
           />
           <input
             type="date"
@@ -108,8 +110,8 @@ export default function TripDetailsPage() {
             onChange={(e) => setEditingTrip({ ...editingTrip, endDate: e.target.value })}
             className="border p-2 rounded"
           />
-          <Button onClick={saveEdit}>Зберегти</Button>
-          <Button variant="ghost" onClick={() => setEditingTrip(null)}>
+          <Button onClick={saveEdit} className=" hover:bg-gray-200 ">Зберегти</Button>
+          <Button variant="outline" className="bg-red-400 hover:bg-red-500" onClick={() => setEditingTrip(null)}>
             Скасувати
           </Button>
         </div>
