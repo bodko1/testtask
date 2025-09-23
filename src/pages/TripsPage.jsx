@@ -23,7 +23,6 @@ export default function TripsPage() {
   const [endDate, setEndDate] = useState("");
   const navigate = useNavigate();
 
-  // Один state для редагування
   const [editingTrip, setEditingTrip] = useState({
     id: null,
     title: "",
@@ -76,7 +75,6 @@ export default function TripsPage() {
     }
   };
 
-  // завантаження подорожей
   const fetchTrips = async () => {
     if (!user) return;
 
@@ -108,7 +106,6 @@ export default function TripsPage() {
     fetchTrips();
   }, [user]);
 
-  // Додаємо нову подорож
   const handleAddTrip = async (e) => {
     e.preventDefault();
     if (!title) return alert("Вкажіть назву подорожі");

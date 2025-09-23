@@ -1,31 +1,20 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
-import { useEffect, useState } from "react";
-import { db } from "../services/firebase.js";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { useState } from "react";
 import { Button } from "../components/ui/button.jsx";
 import {Input} from "@/components/ui/input.js";
+import {useTrip, useUpdateTrip} from "@/queries/trip.js";
 
 export default function TripDetailsPage() {
   const { id } = useParams();
   const { user } = useAuth();
-  const [trip, setTrip] = useState(null);
   const [editingTrip, setEditingTrip] = useState(null);
   const navigate = useNavigate();
+  const updateTripMutation = useUpdateTrip();
+  const { data: trip, isLoading, isError } = useTrip(id);
 
-  useEffect(() => {
-    const fetchTrip = async () => {
-      try {
-        const tripDoc = await getDoc(doc(db, "trips", id));
-        if (tripDoc.exists()) {
-          setTrip({ id: tripDoc.id, ...tripDoc.data() });
-        }
-      } catch (err) {
-        console.error("Помилка при завантаженні подорожі:", err);
-      }
-    };
-    fetchTrip();
-  }, [id]);
+  if (isLoading) return <div>Завантаження...</div>;
+  if (isError || !trip) return <div>Помилка при завантаженні подорожі</div>;
 
   if (!trip) return <p>Подорож не знайдена</p>;
 
@@ -38,7 +27,6 @@ export default function TripDetailsPage() {
     return new Date(date).toISOString().slice(0, 10);
   };
 
-  // Допоміжна функція для відображення дати
   const formatForDisplay = (date) => {
     if (!date) return "";
     if (date.toDate) date = date.toDate(); // якщо Firebase Timestamp
@@ -54,36 +42,12 @@ export default function TripDetailsPage() {
     });
   };
 
-  const saveEdit = async () => {
-    if (
-      editingTrip.startDate &&
-      editingTrip.endDate &&
-      new Date(editingTrip.startDate) > new Date(editingTrip.endDate)
-    ) {
-      return alert("Дата виїзду не може бути пізнішою за дату приїзду");
-    }
 
-    try {
-      await updateDoc(doc(db, "trips", editingTrip.id), {
-        title: editingTrip.title,
-        startDate: editingTrip.startDate ? new Date(editingTrip.startDate) : null,
-        endDate: editingTrip.endDate ? new Date(editingTrip.endDate) : null,
-      });
-
-      setTrip({
-        ...trip,
-        title: editingTrip.title,
-        startDate: editingTrip.startDate ? new Date(editingTrip.startDate) : null,
-        endDate: editingTrip.endDate ? new Date(editingTrip.endDate) : null,
-      });
-
-      setEditingTrip(null);
-      alert("Збережено!");
-    } catch (err) {
-      console.error(err);
-      alert("Помилка при збереженні");
-    }
+  const saveEdit = () => {
+    if (!editingTrip) return;
+    updateTripMutation.mutate(editingTrip);
   };
+
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen gap-4">

@@ -1,30 +1,34 @@
 import { useState } from "react";
-import { auth } from "../services/firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+
 import {useNavigate} from "react-router-dom";
 import {Label} from "@/components/ui/label.js";
 import {Input} from "@/components/ui/input.js";
 import {Button} from "@/components/ui/button.js";
+import {useRegister} from "@/api/auth.js";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate=useNavigate();
+  const { mutate: register } = useRegister();
 
-
-
-  async function handleRegister(e) {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      navigate("/trips");
-    } catch (error) {
-      console.error(error.message);
-      alert(error.message);
-    }
-  }
+    if (!email || !password) return alert("Заповніть email і пароль");
+    register(
+      { email, password },
+      {
+        onSuccess: () => navigate("/trips"),
+        onError: (err) => {
+          alert(err.message || "Сталася помилка");
+        },
+      }
+    );
+  };
+
+
   return (
-    <form onSubmit={handleRegister} className="flex flex-col items-center justify-center h-screen gap-4">
+    <form onSubmit={handleSubmit} className="flex flex-col items-center justify-center h-screen gap-4">
       <h2 className="!text-3xl">Register</h2>
       <div className="">
         <Label htmlFor="email">Email</Label>

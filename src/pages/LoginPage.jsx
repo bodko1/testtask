@@ -1,10 +1,9 @@
 import {useState} from "react";
-import {auth} from "../services/firebase";
-import {signInWithEmailAndPassword} from "firebase/auth";
 import {useNavigate} from "react-router-dom";
 import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
 import {Button} from "@/components/ui/button.js";
+import {useLogin} from "@/queries/auth.js";
 
 
 export default function LoginPage() {
@@ -13,21 +12,29 @@ export default function LoginPage() {
   const navigate = useNavigate();
 
 
-  async function handleLogin(e) {
+  const loginMutation = useLogin(); // просто хук
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      if (!email || !password) return alert("Заповніть email і пароль");
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate("/trips");
-    } catch (error) {
-      console.error(error.message);
-      alert(error.message); // показуємо помилку, якщо щось пішло не так
+    if (!email || !password) {
+      alert("Заповніть email і пароль");
+      return;
     }
-  }
 
-
+    loginMutation.mutate(
+      { email, password },
+      {
+        onSuccess: () => {
+          navigate("/trips"); // виконається після успішного логіну
+        },
+        onError: (err) => {
+          alert(err.message || "Сталася помилка при логіні");
+        },
+      }
+    );
+  };
   return (
-    <form onSubmit={handleLogin} className="flex flex-col items-center justify-center h-screen gap-4">
+    <form onSubmit={handleSubmit} className="flex flex-col items-center justify-center h-screen gap-4">
       <h2 className="!text-3xl">Login</h2>
       <div className="">
         <Label htmlFor="email">Email</Label>
