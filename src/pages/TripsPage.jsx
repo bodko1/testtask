@@ -7,13 +7,13 @@ import {
   where,
   getDocs,
   serverTimestamp,
-  doc,
-  updateDoc,
 } from "firebase/firestore";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
+import {useLogout} from "@/queries/auth.js";
+import {useAddTrip, useUpdateTrips} from "@/queries/trip.js";
 
 export default function TripsPage() {
   const { user, logout } = useAuth();
@@ -21,8 +21,9 @@ export default function TripsPage() {
   const [title, setTitle] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const navigate = useNavigate();
-
+  const logoutMutation=useLogout();
+  const updateTripMutation=useUpdateTrips();
+  const addTripMutation=useAddTrip();
   const [editingTrip, setEditingTrip] = useState({
     id: null,
     title: "",
@@ -30,50 +31,12 @@ export default function TripsPage() {
     endDate: "",
   });
 
-
-
-  const saveEdit = async () => {
-    if (
-      editingTrip.startDate &&
-      editingTrip.endDate &&
-      new Date(editingTrip.startDate) > new Date(editingTrip.endDate)
-    ) {
-      return alert("Дата початку не може бути пізнішою за дату завершення");
-    }
-
-    try {
-      const tripRef = doc(db, "trips", editingTrip.id);
-      await updateDoc(tripRef, {
-        title: editingTrip.title,
-        startDate: editingTrip.startDate
-          ? new Date(editingTrip.startDate)
-          : null,
-        endDate: editingTrip.endDate ? new Date(editingTrip.endDate) : null,
-      });
-
-      setTrips((prev) =>
-        prev.map((trip) =>
-          trip.id === editingTrip.id
-            ? {
-              ...trip,
-              title: editingTrip.title,
-              startDate: editingTrip.startDate
-                ? { seconds: new Date(editingTrip.startDate).getTime() / 1000 }
-                : null,
-              endDate: editingTrip.endDate
-                ? { seconds: new Date(editingTrip.endDate).getTime() / 1000 }
-                : null,
-            }
-            : trip
-        )
-      );
-
-      setEditingTrip({ id: null, title: "", startDate: "", endDate: "" });
-    } catch (error) {
-      console.error(error);
-      alert(error.message);
-    }
+  const saveEdit=()=>{
+    if (!editingTrip) return;
+    updateTripMutation.mutate(editingTrip);
   };
+
+
 
   const fetchTrips = async () => {
     if (!user) return;
@@ -106,55 +69,40 @@ export default function TripsPage() {
     fetchTrips();
   }, [user]);
 
-  const handleAddTrip = async (e) => {
+  const handleAddTrip = (e) => {
     e.preventDefault();
-    if (!title) return alert("Вкажіть назву подорожі");
-    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-      return alert("Дата початку не може бути пізнішою за дату завершення");
-    }
-
-    try {
-      await addDoc(collection(db, "trips"), {
-        title,
-        ownerId: user.uid,
-        collaborators: [],
-        startDate: startDate ? new Date(startDate) : null,
-        endDate: endDate ? new Date(endDate) : null,
-        createdAt: serverTimestamp(),
-      });
-
-      setTitle("");
-      setStartDate("");
-      setEndDate("");
-
-      await fetchTrips(); // одразу оновлюємо
-    } catch (error) {
-      console.error(error);
-      alert(error.message);
-    }
+    addTripMutation.mutate({
+      title,
+      startDate,
+      endDate,
+      ownerId: user.uid,
+    }, {
+      onSuccess: () => {
+        setTitle("");
+        setStartDate("");
+        setEndDate("");
+      },
+      onError: (err) => alert(err?.message),
+    });
   };
+
+
 
   const formatDate = (timestamp) => {
     if (!timestamp) return "";
     return new Date(timestamp.seconds * 1000).toLocaleDateString();
   };
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate("/login");
-    } catch (error) {
-      console.error(error);
-      alert("Помилка при виході");
-    }
-  };
+  const handleCLick=()=>{
+    logoutMutation.mutate();
+  }
 
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen gap-4">
       <div className="flex justify-between items-center mb-4">
         <h2 className="!text-3xl !font-bold">Мої подорожі</h2>
-        <Button variant="destructive" onClick={handleLogout} className="!p-3 absolute top-2 right-4 bg-red-400 hover:bg-red-500">
+        <Button variant="destructive" onClick={handleCLick} className="!p-3 absolute top-2 right-4 bg-red-400 hover:bg-red-500">
           Вийти
         </Button>
       </div>
