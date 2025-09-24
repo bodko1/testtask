@@ -21,7 +21,7 @@ export const useLogout = () => {
       await signOut(auth);
     },
     onSuccess: () => {
-      queryClient.clear(); // очищаємо кеш після логаута
+      queryClient.clear();
       navigate("/login");
     },
     onError: (err) => {

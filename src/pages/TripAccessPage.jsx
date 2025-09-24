@@ -5,7 +5,7 @@ import { Input } from "../components/ui/input.tsx";
 import { useTrip, useInviteCollaborator } from "../queries/trip.js";
 
 export default function TripAccessPage() {
-  const { id } = useParams(); // tripId
+  const { id } = useParams();
   const [email, setEmail] = useState("");
   const navigate=useNavigate();
   const { data: trip, isLoading, isError } = useTrip(id);
@@ -19,7 +19,7 @@ export default function TripAccessPage() {
     inviteMutation.mutate(
       { tripId: id, email: email.trim() },
       {
-        onSuccess: () => setEmail(""), // очищаємо інпут
+        onSuccess: () => setEmail(""),
         onError: (err) => alert(err?.message || "Помилка при додаванні колаборатора"),
       }
     );

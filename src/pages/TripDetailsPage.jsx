@@ -20,7 +20,6 @@ export default function TripDetailsPage() {
 
   const isOwner = trip.ownerId === user.uid;
 
-  // Допоміжна функція для конвертації дати у формат YYYY-MM-DD для інпуту
   const formatForInput = (date) => {
     if (!date) return "";
     if (date.toDate) date = date.toDate(); // якщо Firebase Timestamp

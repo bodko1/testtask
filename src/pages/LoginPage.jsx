@@ -10,8 +10,6 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-
-
   const loginMutation = useLogin(); // просто хук
 
   const handleSubmit = (e) => {
